@@ -1,5 +1,4 @@
-
-const fetch = require('node-fetch');
+const axios = require('axios');
 
 const getVideoId = (youtubeLink) => {
   if (!youtubeLink) {
@@ -21,19 +20,28 @@ const getVideoId = (youtubeLink) => {
 }
 
 const getVideoSnipet = async (videoId) => {
-  try {
-    const response = await fetch(`https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=snippet&key=${process.env.GOOGLE_API_KEY}`)
-
-    if (!response.items || response.items.length === 0) {
-      throw Error("Cannot find video");
+  try {    
+    console.log('Start fetching youtube video');
+    const response = await axios.get(`https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=snippet&key=${process.env.GOOGLE_API_KEY}`);
+    console.log('Fetching success youtube video', response.status);
+    console.log('Youtube data', response.data);
+    const data = response.data;
+    if (!data.items || data.items.length === 0) {
+      console.log("Empty Video Items");
+      return false
     } 
-
+    
     return {
-      title: response.items[0].title,
-      description: response.items[0].description,
+      title: data.items[0].snippet.title,
+      description: data.items[0].snippet.description,
     }
   } catch (error) {
+    console.log(error);
+    return false
+  }  
+}
 
-  }
-  
+module.exports = {
+  getVideoId,
+  getVideoSnipet
 }

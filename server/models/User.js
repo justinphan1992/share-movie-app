@@ -25,7 +25,20 @@ const userSchema = mongoose.Schema({
             type: String,
             required: true
         }
-    }]
+    }],
+    votes: [
+      {
+        video_id: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Video',
+          required: true
+        },
+        vote: {
+          type: Boolean,
+          required: true
+        }
+      }
+    ]
 })
 
 userSchema.pre('save', async function (next) {    
@@ -44,12 +57,20 @@ userSchema.methods.generateAuthToken = async function() {
     return token
 }
 
+userSchema.methods.addVoteVideo = async function(video, vote) {
+  const user = this;
+  const voteVideo = { video_id: video._id.toString(), vote }
+  user.votes = Array.isArray(user.votes) ? user.votes.push(voteVideo) : [voteVideo]  
+  await user.save();
+}
+
 userSchema.statics.findByCredentials = async (email, password) => {    
     const hashPassword = await bcrypt.hash(password, 8)
     const user = await User.findOne({ email, hashPassword }).select("-password")
     if (!user) {
         throw new Error({ error: 'Invalid login credentials' })
-    }        
+    }
+        
     return user
 }
 
