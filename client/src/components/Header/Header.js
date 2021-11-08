@@ -15,7 +15,7 @@ const Header = () => {
         <Grid container spacing={1} justifyContent="space-between">
           <Grid item>
             <Box display="flex" alignItems="center" sx={{ gap: 1}}>
-              <ThumbUpAltIcon fontSize="large" />
+              <ThumbUpAltIcon data-testid="site-logo" fontSize="large" />
               <Typography variant="h4" component="span">Funny Movies</Typography>
             </Box>            
           </Grid>

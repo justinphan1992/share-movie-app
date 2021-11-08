@@ -14,6 +14,7 @@ const VideoItem = ({ video, showVote = false, onVote, isVoted = null }) => {
   return (
     <Card sx={{ display: 'flex', gap: 4, border: 0, boxShadow: 'none' }}>
       <CardMedia
+        aria-label="video-item"
         component="iframe"
         sx={{ width: 800 }}
         src={`https://www.youtube.com/embed/${video.youtube_id}`}        
@@ -33,13 +34,13 @@ const VideoItem = ({ video, showVote = false, onVote, isVoted = null }) => {
                   <Typography variant="body2" component="span">
                     {video.up_vote}
                   </Typography>
-                  <IconButton disabled={isVoted === true} onClick={() => onVote({video: video._id, vote: true})}>
+                  <IconButton aria-label="up-vote" aria-checked={isVoted === true} disabled={isVoted === true} onClick={() => onVote({video: video._id, vote: true})}>
                     <ThumbUpIcon color={isVoted === true ? 'primary' : 'default'} fontSize="small" />
                   </IconButton>                  
                   <Typography variant="body2" component="span">
                     {video.down_vote}
                   </Typography>
-                  <IconButton disabled={isVoted === false} onClick={() => onVote({video: video._id, vote: false})}>
+                  <IconButton aria-label="down-vote" aria-checked={isVoted === false} disabled={isVoted === false} onClick={() => onVote({video: video._id, vote: false})}>
                     <ThumbDownIcon color={isVoted === false ? 'primary' : 'default'} fontSize="small" />
                   </IconButton>                              
                 </Box>

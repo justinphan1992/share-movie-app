@@ -6,7 +6,6 @@ import useGetVideos from '../hooks/useGetVideos';
 import Box from '@mui/material/Box';
 
 const Home = () => {
-
   const {
     data,
     fetchNextPage,

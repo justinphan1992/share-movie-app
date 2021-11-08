@@ -3,8 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import Home from './pages/Home';
 import ShareVideo from './pages/ShareVideo';
 
-function App() {
-  console.log(process.env.REACT_APP_API_URL)
+function App() {  
   return (
     <div className="App">
       <Header />
