@@ -22,5 +22,8 @@
   "scripts": {
     "start": "env-cmd -f ./.env nodemon ./app.js",
     "deploy": "serverless deploy"
-  }
+  },
+  "jest": {    
+    "setupFilesAfterEnv": ["<rootDir>/src/setupTests.js"]
+   }
 }
