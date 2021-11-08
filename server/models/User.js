@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const validator = require('validator')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const { ObjectId } = require('bson')
 
 const userSchema = mongoose.Schema({
     email: {
@@ -17,8 +18,7 @@ const userSchema = mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,        
-        minLength: 7
+        required: true,                
     },
     tokens: [{
         token: {
@@ -30,8 +30,7 @@ const userSchema = mongoose.Schema({
       {
         video_id: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: 'Video',
-          required: true
+          ref: 'Video',          
         },
         vote: {
           type: Boolean,
@@ -43,8 +42,8 @@ const userSchema = mongoose.Schema({
 
 userSchema.pre('save', async function (next) {    
     const user = this
-    if (user.isModified('password')) {
-        user.password = await bcrypt.hash(user.password, 8)
+    if (user.isModified('password')) {        
+        user.password = await bcrypt.hash(user.password, 8)        
     }
     next()
 })
@@ -58,19 +57,33 @@ userSchema.methods.generateAuthToken = async function() {
 }
 
 userSchema.methods.addVoteVideo = async function(video, vote) {
-  const user = this;
-  const voteVideo = { video_id: video._id.toString(), vote }
-  user.votes = Array.isArray(user.votes) ? user.votes.push(voteVideo) : [voteVideo]  
-  await user.save();
+  const user = this;  
+  const updatedUser = await User.findOneAndUpdate(
+    {
+      _id: user._id.toString(),
+    },
+    {
+      $pull: {
+        votes : { video_id: video._id.toString() } 
+      },
+    },
+  )  
+  const voteVideo = { video_id: video._id.toString(), vote }      
+  updatedUser.votes.push(voteVideo)    
+  await updatedUser.save()    
+  return updatedUser
 }
 
-userSchema.statics.findByCredentials = async (email, password) => {    
-    const hashPassword = await bcrypt.hash(password, 8)
-    const user = await User.findOne({ email, hashPassword }).select("-password")
+userSchema.statics.findByCredentials = async (email, password) => {       
+    const user = await User.findOne({ email })
     if (!user) {
-        throw new Error({ error: 'Invalid login credentials' })
+        throw new Error('Invalid login credentials')
+    }            
+    const isPasswordMatch = await bcrypt.compare(password, user.password)
+    if (!isPasswordMatch) {
+      throw new Error('Invalid login credentials')
     }
-        
+
     return user
 }
 
